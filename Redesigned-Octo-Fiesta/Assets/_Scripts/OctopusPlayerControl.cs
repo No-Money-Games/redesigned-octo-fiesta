@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class OctopusPlayerControl : MonoBehaviour
 {
-    enum PLAYER_STATE { S_WALK, S_IDLE, S_RUN, S_JUMP };
+    enum PLAYER_STATE { S_WALK, S_IDLE, S_JUMP }; //player states
     PLAYER_STATE state;
+
+    Rigidbody rb;
     private Vector3 startPosition;
     private Quaternion startRotation;
     Animator anim;
@@ -15,16 +17,19 @@ public class OctopusPlayerControl : MonoBehaviour
     float jumpForce = 0.35f;
     float gravityModifier = 0.2f;
     float yVelocity = 0;
-    float speed = 10000f;
+    float speed = 10f;
+    Ray camRay;
+    RaycastHit hit;
+
     void Start()
     {
-        state = PLAYER_STATE.S_IDLE;
         anim = GetComponent<Animator>();
         cc = gameObject.GetComponent<CharacterController>();
-        Rigidbody rb = gameObject.GetComponent<Rigidbody>();
+        rb = gameObject.GetComponent<Rigidbody>();
         previousIsGroundedValue = cc.isGrounded;
         startPosition = transform.position;
         startRotation = transform.rotation;
+        anim.SetTrigger("walk");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -38,84 +43,76 @@ public class OctopusPlayerControl : MonoBehaviour
             }
         }
     }
-    void Update()
+    private void Update()
     {
+        var hAxis = Input.GetAxis("Horizontal"); //Get horizontal and vertical axis references
+        var vAxis = Input.GetAxis("Vertical");
 
-        //float hAxis = Input.GetAxis("Horizontal");
-        //float vAxis = Input.GetAxis("Vertical");
-        //transform.Rotate(0, hAxis * rotateSpeed * Time.deltaTime, 0);
-        //transform.position = new Vector3(+Time.deltaTime*speed,transform.position.y,transform.position.z);
-
-
-
+        aim(); //run aiming function
+        if (Input.GetButtonDown("Fire1")) //run shooting function if press mouse button
+        {
+            shoot();
+        }
 
         switch (state)
         {
-            case PLAYER_STATE.S_IDLE:
-                if (Input.GetKeyDown(KeyCode.W))
+            case PLAYER_STATE.S_IDLE: //idle state
+                anim.SetTrigger("stop");
+                if (hAxis != 0 || vAxis != 0) //switch to walk if moving
                 {
                     state = PLAYER_STATE.S_WALK;
-                    anim.SetTrigger("walk");
-                    if (Input.GetKey(KeyCode.W))
-                    {
-                        transform.Translate(Vector3.up * Time.deltaTime * 1);
-                        Debug.Log("move");
-                    }
-                    if (Input.GetKey(KeyCode.S))
-                    {
-                        transform.position -= transform.forward * speed * Time.deltaTime;
-                    }
-                    if (Input.GetKey(KeyCode.D))
-                    {
-                        transform.position += transform.right * speed * Time.deltaTime;
-                    }
-                    if (Input.GetKey(KeyCode.A))
-                    {
-                        transform.position -= transform.right * speed * Time.deltaTime;
-                    }
+                    
                 }
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Space)) //switch to jump if press space
                 {
                     state = PLAYER_STATE.S_JUMP;
-                    anim.SetTrigger("jump");
                     
                 }
                 break;
 
             case PLAYER_STATE.S_WALK:
-                if (Input.GetKeyUp(KeyCode.W))
+                anim.SetTrigger("walk");
+
+                Vector3 forward = transform.TransformDirection(Vector3.forward) * vAxis; //moving around
+                Vector3 right = transform.TransformDirection(Vector3.right) * hAxis;
+                Vector3 direction = forward + right;
+                cc.SimpleMove(direction * speed);
+
+                if (hAxis == 0 && vAxis == 0) //if stop moving, go to idle
                 {
                     state = PLAYER_STATE.S_IDLE;
-                    anim.SetTrigger("stop");
-                }
-                if (Input.GetKeyDown(KeyCode.LeftShift))
-                {
-                    state = PLAYER_STATE.S_RUN;
-                    anim.SetTrigger("run");
-                }
-                if (Input.GetKeyDown(KeyCode.Space))
-                {
-                    state = PLAYER_STATE.S_JUMP;
-                    anim.SetTrigger("jump");
-                    
                 }
                 break;
 
             case PLAYER_STATE.S_JUMP:
+                anim.SetTrigger("jump");
                 if (Input.GetKeyUp(KeyCode.Space))
                 {
                     state = PLAYER_STATE.S_IDLE;
-                    anim.SetTrigger("stop");
                     if (Input.GetKeyDown(KeyCode.W))
                     {
                         state = PLAYER_STATE.S_WALK;
-                        anim.SetTrigger("walk");
                     }
                 }
                 break;
 
         }
     }
+
+    private void aim()
+    {
+        camRay = Camera.main.ScreenPointToRay(Input.mousePosition); //shoot ray at mouse
+        if (Physics.Raycast(camRay, out hit))
+        {
+            transform.LookAt(hit.point); //look at whatever the ray hit
+        }
+    }
+    
+    private void shoot()
+    {
+
+    }
+    
 }
 
 

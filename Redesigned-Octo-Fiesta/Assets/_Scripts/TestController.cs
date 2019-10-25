@@ -5,7 +5,7 @@ using UnityEngine;
 public class TestController : MonoBehaviour
 {
     public int speed;
-    Rigidbody rb; 
+    Rigidbody rb;
 
     void Start()
     {

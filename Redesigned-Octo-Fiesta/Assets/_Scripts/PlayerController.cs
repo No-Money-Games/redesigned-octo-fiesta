@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private enum PLAYER_STATE { S_WALK, S_SHOOT, S_IDLE, S_JUMP} //add or remove states here
+    private enum PLAYER_STATE { S_WALK, S_IDLE, S_JUMP} //add or remove states here
     PLAYER_STATE state;
     Animator anim;
     Rigidbody rb;
@@ -18,15 +18,34 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A)) //testing animation state switching
+        {
+            Debug.Log("Now in idle");
+            state = PLAYER_STATE.S_IDLE;
+        }
+
+        if (Input.GetKeyDown(KeyCode.S)) //testing animation state switching
+        {
+            Debug.Log("Now in jump");
+            state = PLAYER_STATE.S_JUMP;
+        }
+
+        if (Input.GetKeyDown(KeyCode.D)) //testing animation state switching
+        {
+            Debug.Log("Now in walk");
+            state = PLAYER_STATE.S_WALK;
+        }
+
         switch (state)
         {
             case PLAYER_STATE.S_IDLE: //idle state
+                anim.SetTrigger("IDLE");
                 break;
             case PLAYER_STATE.S_JUMP: //jump state
-                break;
-            case PLAYER_STATE.S_SHOOT: //shoot state
+                anim.SetTrigger("JUMP");
                 break;
             case PLAYER_STATE.S_WALK: //walk state
+                anim.SetTrigger("WALK");
                 break;
         }
     }
