@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum NotificationType { }; //Put the notification types here
+public enum NotificationType {LightUpdated, AudioUpdated, AmmoUpdated, MaxAmmoUpdated, Reloading}; //Put the notification types here
 
 public abstract class Observer : MonoBehaviour
 {

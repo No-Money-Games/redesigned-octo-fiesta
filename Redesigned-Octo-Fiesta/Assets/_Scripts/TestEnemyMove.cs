@@ -7,30 +7,59 @@ public class TestEnemyMove : MonoBehaviour
 {
     public float lookRadius = 10f;
 
-    public Transform target;
+    private Transform target;
+    public Transform home;
     NavMeshAgent agent;
 
+    public int health = 3;
+    public AudioManager audioManager;
+    RaycastHit hit;
+
+    Vector3 rayDirection;
+
+    public GameObject deathBubbles;
 
     void Start()
     {
-
+        target = GameObject.FindGameObjectWithTag("Player").transform;
+        audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         agent = GetComponent<NavMeshAgent>();
     }
 
 
     void Update()
     {
+        if(health <= 0)
+        {
+            Debug.Log("I died");
+            audioManager.updateAudio("boom");
+            GameObject bubbles = Instantiate(deathBubbles, transform.position, Quaternion.identity);
+            Destroy(bubbles, 2);
+            gameObject.SetActive(false);
+        }
+
         float distance = Vector3.Distance(target.position, transform.position);
 
         if(distance <= lookRadius)
         {
-            agent.SetDestination(target.position);
+            rayDirection = (target.transform.position + new Vector3(0,1,0)) - (transform.position + new Vector3 (0,1,0));
 
-            if(distance <= agent.stoppingDistance)
+            bool raycastdown = Physics.Raycast((transform.position + new Vector3(0, 1, 0)), rayDirection, out hit);
+            Debug.DrawLine(new Vector3(transform.position.x, transform.position.y + 1.5f, transform.position.z), new Vector3(target.transform.position.x, transform.position.y + 1.5f, target.transform.position.z));
+            if (raycastdown && hit.transform.name.Equals("OctopusPlayer Variant"))
             {
-                //Attack target -- once script is written, paste here.
-                FaceTarget();
+                agent.SetDestination(target.position);
+                audioManager.updateAudio("attack");
+
+                if (distance <= agent.stoppingDistance)
+                {
+                    FaceTarget();
+                }
             }
+        } else
+        {
+            agent.SetDestination(home.position);
+            FaceTarget();
         }
     }
 

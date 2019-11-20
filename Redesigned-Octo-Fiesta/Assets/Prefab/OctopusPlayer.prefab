@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 1123504950506166955}
   m_Layer: 0
   m_Name: OctopusPlayer
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -79,7 +79,7 @@ Animator:
   m_GameObject: {fileID: 1123504950506166953}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 01f5fa9c0f23a574e81d2506a1275fb3, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -124,7 +124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df80795aa365a244b741feb25030c1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerRB: {fileID: 1123504950506166954}
+  bullet: {fileID: 0}
+  bulletSpawn: {fileID: 0}
 --- !u!65 &1123504950506166955
 BoxCollider:
   m_ObjectHideFlags: 0

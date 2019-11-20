@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Floor
   - Enemy
+  - Lamp
+  - Recovering
+  - Door
+  - Waypoint
   layers:
   - Default
   - TransparentFX
